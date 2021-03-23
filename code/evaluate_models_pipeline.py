@@ -25,9 +25,10 @@ def get_model(model_name, stylized=False):
     # googlenet 
     # resnet_50 
     model = None
-    model_name = str.lower(model_name)
+    
 
     if not stylized:
+        model_name = str.lower(model_name)
         if model_name == "alexnet":
             model = models.alexnet(pretrained=True, progress=True)
         elif model_name == "vgg16":
@@ -56,8 +57,7 @@ def load_stylized_model(model_name):
     device = torch.device('cpu')
 
     if "resnet50" in model_name:
-        print("Using the ResNet50 architecture.")
-        assert model_name in model_urls, "You have not specified the resnet50 name correctly. Choose one of the following: resnet50_trained_on_SIN, resnet50_trained_on_SIN_and_IN, resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN"
+        assert model_name in model_urls.keys(), "You have not specified the resnet50 name correctly ({}). Choose one of the following: resnet50_trained_on_SIN, resnet50_trained_on_SIN_and_IN, resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN".format(model_name)
         model = torchvision.models.resnet50(pretrained=False)
         model = torch.nn.DataParallel(model)
         checkpoint = model_zoo.load_url(model_urls[model_name], map_location=device)
