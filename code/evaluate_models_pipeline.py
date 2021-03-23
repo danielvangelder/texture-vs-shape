@@ -53,12 +53,14 @@ def load_stylized_model(model_name):
             'resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN': 'https://bitbucket.org/robert_geirhos/texture-vs-shape-pretrained-models/raw/60b770e128fffcbd8562a3ab3546c1a735432d03/resnet50_finetune_60_epochs_lr_decay_after_30_start_resnet50_train_45_epochs_combined_IN_SF-ca06340c.pth.tar',
             'alexnet_trained_on_SIN': 'https://bitbucket.org/robert_geirhos/texture-vs-shape-pretrained-models/raw/0008049cd10f74a944c6d5e90d4639927f8620ae/alexnet_train_60_epochs_lr0.001-b4aa5238.pth.tar',
     }
+    device = torch.device('cpu')
 
     if "resnet50" in model_name:
         print("Using the ResNet50 architecture.")
+        assert model_name in model_urls, "You have not specified the resnet50 name correctly. Choose one of the following: resnet50_trained_on_SIN, resnet50_trained_on_SIN_and_IN, resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN"
         model = torchvision.models.resnet50(pretrained=False)
-        model = torch.nn.DataParallel(model).cuda()
-        checkpoint = model_zoo.load_url(model_urls[model_name])
+        model = torch.nn.DataParallel(model)
+        checkpoint = model_zoo.load_url(model_urls[model_name], map_location=device)
     elif "vgg16" in model_name:
         print("Using the VGG-16 architecture.")
        
@@ -69,16 +71,15 @@ def load_stylized_model(model_name):
 
         model = torchvision.models.vgg16(pretrained=False)
         model.features = torch.nn.DataParallel(model.features)
-        model.cuda()
-        checkpoint = torch.load(filepath)
+        checkpoint = torch.load(filepath, map_location=device)
 
 
     elif "alexnet" in model_name:
         print("Using the AlexNet architecture.")
+        model_name = "alexnet_trained_on_SIN" 
         model = torchvision.models.alexnet(pretrained=False)
         model.features = torch.nn.DataParallel(model.features)
-        model.cuda()
-        checkpoint = model_zoo.load_url(model_urls[model_name])
+        checkpoint = model_zoo.load_url(model_urls[model_name], map_location=device)
     else:
         raise ValueError("unknown model architecture.")
 
@@ -135,10 +136,10 @@ def main(model_name, stylized, path_to_test_set, output_file_path):
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     logging.info(f"Starting test set evaluation for model: {model_name}")
     logging.info(f"This log file will be saved at: {log_name}")
-    if stylized:
-        logging.info("""Running the pretrained stylized models requires torch to be compiled with CUDA... 
-        If this does not work for you make sure to install the recommended version with cuda support:
-        pip install torch==1.8.0+cu111 torchvision==0.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html""")
+    # if stylized: # Not necessary anymore as the model is mapped and loaded to cpu
+        # logging.info("""Running the pretrained stylized models requires torch to be compiled with CUDA... 
+        # If this does not work for you make sure to install the recommended version with cuda support:
+        # pip install torch==1.8.0+cu111 torchvision==0.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html""")
     logging.info(f"Loading model with pretrained parameters. Is trained on stylized dataset?: {stylized}")
     model = get_model(model_name, stylized)
     logging.info(f"Loading test set on path {path_to_test_set}")
