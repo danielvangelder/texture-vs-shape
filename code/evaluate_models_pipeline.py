@@ -8,7 +8,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-
+import matplotlib.pyplot as plt
 import torch
 import torchvision
 from torchvision import datasets, models
@@ -36,6 +36,8 @@ def get_model(model_name, stylized=False):
             model = models.googlenet(pretrained=True, progress=True)
         elif model_name == "resnet50":
             model = models.resnet50(pretrained=True, progress=True)
+        elif model_name == "resnet101":
+            model = models.resnet101(True, True)
         else:
             raise NotImplementedError(f"No implemented model for name {model_name}")
     if stylized:
@@ -94,7 +96,10 @@ def load_test_set(path_to_test_set):
     of the image urls
     """
     transform = transforms.Compose([
-        transforms.ToTensor()
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
     test_set = datasets.ImageFolder(path_to_test_set, transform=transform)
     test = DataLoader(test_set, batch_size=1, shuffle=False)  # Load in batches of size 1
@@ -108,8 +113,9 @@ def run_model_on_test_set(model, test_set, class_labels, imgs):
     results = []
     for i, data in tqdm(enumerate(test_set), total=len(test_set)):
         images, labels = data
+        model_output = model(images)
         # get softmax output
-        softmax_output = torch.softmax(model(images), 1)  # replace with your favourite CNN
+        softmax_output = torch.softmax(model_output, 1)  # replace with your favourite CNN
         # convert to numpy
         softmax_output_numpy = softmax_output.detach().numpy().flatten()  # replace with conversion
         # create mapping
@@ -148,6 +154,7 @@ def main(model_name, stylized, path_to_test_set, output_file_path):
     model = get_model(model_name, stylized)
     logging.info(f"Loading test set on path {path_to_test_set}")
     class_labels, test_set, imgs = load_test_set(path_to_test_set)
+
     logging.info(f"Running model on test set")
     results = run_model_on_test_set(model, test_set, class_labels, imgs)
     logging.info(f"Writing results to output file: {output_file_path}")
