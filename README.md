@@ -32,7 +32,7 @@ The authors of the paper researched many state of the art CNN models. One of the
 ((correct shape decisions) / (correct shape decisions + correct texture decisions))
 
 <p align="center">
- <img src="https://user-images.githubusercontent.com/10252263/114720759-95affc00-9d38-11eb-8612-803c277c91ea.jpg" width=49%>
+ <img src="https://user-images.githubusercontent.com/10252263/114720759-95affc00-9d38-11eb-8612-803c277c91ea.jpg" width=600>
 </p>
 Figure 4: Classification results for human observers (red circles) and ImageNet-trained networks AlexNet (purple diamonds), VGG16 (blue triangles), GoogLeNet (turquoise circles) and ResNet-50 (grey squares).
 <br/>
@@ -43,15 +43,21 @@ All models perform overall worse on the cue conflict validation set than on the 
 
 
 <p align="center">
- <img src="https://user-images.githubusercontent.com/10252263/114721069-dc055b00-9d38-11eb-90ae-ebe02735e826.jpg" width=49%>
+ <img src="https://user-images.githubusercontent.com/10252263/114721069-dc055b00-9d38-11eb-90ae-ebe02735e826.jpg" width=600>
 </p>
 Figure 5: Classification results for human observers (red circles) and results of resnet50 trained on the normal ImageNet (grey squares) vs resnet50 trained on Stylized-ImageNet (orange squares)
 
 ## Replication
 As the authors did a lot of experiments, it was infeasible for us to replicate them all. We focussed on replicating Figure 4 and Figure 5. We ran the different models on the cue conflict validation set, like the authors did, to create the replicated figure 4 and 5 below: 
 
-![figure 4](/code/fig4results/figure4.png)
-![figure 5](/code/fi5results/figure5.png)
+<p align="center">
+ <img src="/code/fig4results/figure4.png" width=600>
+</p>
+
+<p align="center">
+ <img src="/code/fig5results/figure5.png" width=600>
+</p>
+
 
 
 ## Additional Dataset
