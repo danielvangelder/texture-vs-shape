@@ -9,7 +9,7 @@
 
 The paper by Geirhos et al. \[1\] provides a novel perspective on the performance on ImageNet-trained CNNs. They argue that while it is commonly thought that Deep CNNs recognise objects by learning abstract representations of their shape, they rather learn to recognize objects by their texture(s). This is in contrast to how humans recognize objects, which is primarily by shape. 
 
-Through a comparative study, the authors demonstrate that many state-of-the-art CNN models (e.g. ResNet, AlexNet, GoogleNet, etc.) trained om ImageNet base their predictions on textures while humans base their respective predictions on shape. This result is achieved by performing a "style transfer" on some of the images in ImageNet. The style transfer is performed by extracting the texture of a _style_ image and applying that on a _content_ image. See the figure below for an example provided by the authors:
+Through a comparative study, the authors demonstrate that many state-of-the-art CNN models (e.g. ResNet, AlexNet, GoogLeNet, etc.) trained om ImageNet base their predictions on textures while humans base their respective predictions on shape. This result is achieved by performing a "style transfer" on some of the images in ImageNet. The style transfer is performed by extracting the texture of a _style_ image and applying that on a _content_ image. See the figure below for an example provided by the authors:
 
 ![Style transfer example](img/style-transfer-example.png)
 _Figure 1: Style transfer example where the leftmost image shows a picture of elephant skin used as the style image, the middle picture shows a picture of a cat used as the content image and the rightmost picture showing the style transfered result._
@@ -28,41 +28,43 @@ The results show that when ResNet-50 is trained on the Stylized-ImageNet the cue
 
 ## Paper Results 
 
-The authors of the paper researched many state of the art CNN models. One of the focus points were resnet50, alexnet, googlenet and vgg-16. The authors used these models to predict 1280 images from 16 different categories. All images contained a cue conflict from one of the other categories. Each of the models has a 1000 category output, so these outputs are mapped to the 16 remaining categories. In the image below, both the overall performance per category (right bar plots) and the fraction of shape decisions is established. The fraction of shape decisions is calculated by first finding all images with cue conflicts that are correctly classified. Meaning by correctly predicting either the shape or the texture of the image. The fraction of shape decisions is than the number of images correctly classified by shape devided by the total correctly classified images previously calculated.
+The authors of the paper researched many state of the art CNN models. One of the focus points were ResNet-50, AlexNet, GoogLeNet and VGG-16. The authors used these models to predict 1280 images from 16 different ImageNet categories. All images contained a cue conflict from one of the other categories. Each of the models has a 1000 category output, so these outputs are mapped to the 16 remaining categories. In the image below, both the overall performance per category (right bar plots) and the fraction of shape decisions is established. The fraction of shape decisions is calculated by first finding all images with cue conflicts that are correctly classified. Meaning by correctly predicting either the shape or the texture of the image. The fraction of shape decisions is than the number of images correctly classified by shape devided by the total correctly classified images previously calculated.
 ((correct shape decisions) / (correct shape decisions + correct texture decisions))
 
 <p align="center">
  <img src="https://user-images.githubusercontent.com/10252263/114720759-95affc00-9d38-11eb-8612-803c277c91ea.jpg" width=600>
 </p>
-Figure 4: Classification results for human observers (red circles) and ImageNet-trained networks AlexNet (purple diamonds), VGG16 (blue triangles), GoogLeNet (turquoise circles) and ResNet-50 (grey squares).
+_Figure 3 (paper Figure 4): Classification results for human observers (red circles) and ImageNet-trained networks AlexNet (purple diamonds), VGG16 (blue triangles), GoogLeNet (turquoise circles) and ResNet-50 (grey squares)._
 <br/>
 <br/>
 
 
-All models perform overall worse on the cue conflict validation set than on the normal ImageNet images. Most of the decisions are made on the texture of the image, and all the models perform poorly on the shape decisions. To investigate if it is possible to improve the shape decision fraction, the authors trained a resnet50 model on the Stylized-Imagenet dataset previously described. 
+All models perform overall worse on the cue conflict validation set than on the normal ImageNet images. Most of the decisions are made on the texture of the image, and all the models perform poorly on the shape decisions. To investigate if it is possible to improve the shape decision fraction, the authors trained a ResNet-50 model on the Stylized-ImageNet dataset as previously described. 
 
 
 <p align="center">
  <img src="https://user-images.githubusercontent.com/10252263/114721069-dc055b00-9d38-11eb-90ae-ebe02735e826.jpg" width=600>
 </p>
-Figure 5: Classification results for human observers (red circles) and results of resnet50 trained on the normal ImageNet (grey squares) vs resnet50 trained on Stylized-ImageNet (orange squares)
+_Figure 4 (paper Figure 5): Classification results for human observers (red circles) and results of resnet50 trained on the normal ImageNet (grey squares) vs resnet50 trained on Stylized-ImageNet (orange squares)_
 
 ## Replication
-As the authors did a lot of experiments, it was infeasible for us to replicate them all. We focussed on replicating Figure 4 and Figure 5. We ran the different models on the cue conflict validation set, like the authors did, to create the replicated figure 4 and 5 below: 
+As the authors performed a lot of experiments, it was infeasible for us to replicate them all. We focussed on replicating Figure 4 and Figure 5. We ran the different models on the cue conflict validation set, like the authors did, to create the replicated figures 4 and 5 below: 
 
 <p align="center">
  <img src="/code/fig4results/figure4_new.png" width=600>
 </p>
+_Figure 5: Our replication of Figure 4 in the paper. The legend describes which dots represent which model._
 
 <p align="center">
  <img src="/code/fig5results/figure5.png" width=600>
 </p>
+_Figure 5: Our replication of Figure 5 in the paper. The legend describes which dots represent which model._
 
 We excluded the human trials. Both replications show some different results than their original. Figure 4 also shows different shape fraction averages compared with the original figure 4, where as figure 5 has the same fraction averages. 
 
 ## Additional Dataset
 <!-- Daniel -->
-Besides replicating figure 5 using the pre-trained weights provided by the authors, we wanted to replicate it by retraining the model on the Stylized-ImageNet dataset. However, due to the licensing of the ImageNet dataset, the authors were not allowed to share the dataset used. Therefore, we had to create it on our own. However, due to the sheer size of the ImageNet dataset and the limited hardware available for the style transfers, we opted to recreate a downsampled version of Stylized-ImageNet with a resolution of 64x64. It turned out to not be possible within the limit of the budget to train the ResNet-50 model on this dataset, therefore we opted to only  create the dataset.
+Besides replicating Figure 5 using the pre-trained weights provided by the authors, we wanted to replicate it by retraining the model on the Stylized-ImageNet dataset. However, due to the licensing of the ImageNet dataset, the authors were not allowed to share the dataset used. Therefore, we had to create it on our own. However, due to the sheer size of the ImageNet dataset and the limited hardware available for the style transfers, we opted to recreate a downsampled version of Stylized-ImageNet with a resolution of 64x64. It turned out to not be possible within the limit of the budget to train the ResNet-50 model on this dataset, therefore we opted to only  create the dataset.
 
 Creating this dataset was non-trivial as it requires sophisticated compute hardware. We initially attempted to run this on a Google Cloud VM could not create an instance with a fast enough VM to create the dataset in a reasonable amount of time. Thus, we tried to create the dataset in Colab Notebooks using Colab Pro. This turned out to be possible. We created the dataset in 10 batches taking approximately ~3.5 hours per batch. 
 
