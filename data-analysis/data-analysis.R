@@ -303,7 +303,7 @@ plot.performance(phasescrambling.t,
                  plot.legend = F,
                  main="",
                  x.range=c(0, 180),
-                 xlab="Phase noise width [°]",
+                 xlab="Phase noise width [B0]",
                  ticks=c(0, 30, 60, 90, 120, 150, 180),
                  ylab="")
 dev.off()

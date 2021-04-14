@@ -20,7 +20,7 @@ library(stats)
 library(png)
 library(scales)
 library(pBrackets)
-library(PET)
+
 library(TeachingDemos)
 
 ###################################################################
@@ -1699,9 +1699,11 @@ get.category.order = function(dat, x.is.content) {
 get.texture = function(imagename) {
   # Helper function: return 'style' category as character from imagename.
   # This is hard-coded to the imagename formatting.
-  
+  print(imagename)
   a = strsplit(strsplit(strsplit(imagename, "_")[[1]][7], "-")[[1]][2], ".png")[[1]]
+  print(a)
   category = gsub('[[:digit:]]+', '', a)
+  print(category)
   return(category)
 }
 
