@@ -43,6 +43,7 @@ Creating this dataset was non-trivial as it requires sophisticated compute hardw
 ## Conclusion
 <!-- Daniel -->
 <!-- Future work -->
+With this reproduction we have replicated a portion of the results in the paper by Geirhos et al. Our work indicates that ImageNet trained CNNs indeed are biased towards textures. As future work, we propose that, using the downsampled dataset that was created with this project, the ResNet-50 model is re-trained using that dataset to further confirm the results put forward by the authors. 
 
 ## References
 - \[1\]: Geirhos, R., Rubisch, P., Michaelis, C., Bethge, M., Wichmann, F. A., & Brendel, W. (2018). ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness. _arXiv preprint arXiv:1811.12231_
@@ -54,7 +55,17 @@ Chicago
 # Using this Repository
 
 ## Replicating the figures
-Run the script `code/evaluate_models.pipeline.py` with the following arguments:
+In order to create the data to create the figures from this report, run the script `code/evaluate_models.pipeline.py` with the following arguments:
+
+1. model name
+2. stimuli directory (in our case: `stimuli/style-transfer-preprocessed-512`) 
+3. output csv file name
+4. if using stylized pretrained models, add `-s`
+
+Create the figures in the notebook `code/ReproduceFigures.ipynb`
 
 ## Creating the stylized dataset
+
+The code to create the stylized dataset can be found in the repository by the original authors: 
+
 https://github.com/bethgelab/stylize-datasets
