@@ -11,7 +11,7 @@ The paper by Geirhos et al. \[1\] provides a novel perspective on the performanc
 
 Through a comparative study, the authors demonstrate that many state-of-the-art CNN models (e.g. ResNet, AlexNet, GoogLeNet, etc.) trained om ImageNet base their predictions on textures while humans base their respective predictions on shape. This result is achieved by performing a "style transfer" on some of the images in ImageNet. The style transfer is performed by extracting the texture of a _style_ image and applying that on a _content_ image. See the figure below for an example provided by the authors:
 
-![Style transfer example](img/style-transfer-example.png)
+![Style transfer example](img/style-transfer-example.png)  
 _Figure 1: Style transfer example where the leftmost image shows a picture of elephant skin used as the style image, the middle picture shows a picture of a cat used as the content image and the rightmost picture showing the style transfered result._
 
 When a model predicts the class of the image as its texture's class rather than its content's class, this is called a "cue conflict".
@@ -20,7 +20,7 @@ After demonstrating that ImageNet trained CNNs are biased towards texture, the a
 
 Using the AdaIN style transfer approach by Huang and Belongie \[2\], images from ImageNet are converted to stylized images using random paintings (in this case, the [Kaggle Painter By Numbers Dataset](https://www.kaggle.com/c/painter-by-numbers/data)). The authors hypothesize that when models like ResNet-50 are trained on Stylized ImageNet, the frequency of cue conflicts is significantly reduced.
 
-![Stylized ImageNet Examples](img/stylized-imagenet.png)
+![Stylized ImageNet Examples](img/stylized-imagenet.png)  
 _Figure 2: Style transfer examples where the content image is the picture on the left and its corresponding stylized versions are the ten images to the right._
 
 The results show that when ResNet-50 is trained on the Stylized-ImageNet the cue conflicts dramatically decrease. However, performance on the original ImageNet validation set is somewhat reduced. To combat this, the authors propose a model called Shape-ResNet which is trained on both ImageNet and Stylized-ImageNet and consequently fine-tuned on ImageNet again. This final model achieves a better score on the ImageNet task than the original ResNet-50 model.
@@ -34,7 +34,9 @@ The authors of the paper researched many state of the art CNN models. One of the
 <p align="center">
  <img src="https://user-images.githubusercontent.com/10252263/114720759-95affc00-9d38-11eb-8612-803c277c91ea.jpg" width=600>
 </p>
+
 _Figure 3 (paper Figure 4): Classification results for human observers (red circles) and ImageNet-trained networks AlexNet (purple diamonds), VGG16 (blue triangles), GoogLeNet (turquoise circles) and ResNet-50 (grey squares)._
+
 <br/>
 <br/>
 
@@ -45,6 +47,7 @@ All models perform overall worse on the cue conflict validation set than on the 
 <p align="center">
  <img src="https://user-images.githubusercontent.com/10252263/114721069-dc055b00-9d38-11eb-90ae-ebe02735e826.jpg" width=600>
 </p>
+
 _Figure 4 (paper Figure 5): Classification results for human observers (red circles) and results of resnet50 trained on the normal ImageNet (grey squares) vs resnet50 trained on Stylized-ImageNet (orange squares)_
 
 ## Replication
@@ -53,12 +56,15 @@ As the authors performed a lot of experiments, it was infeasible for us to repli
 <p align="center">
  <img src="/code/fig4results/figure4_new.png" width=600>
 </p>
+
 _Figure 5: Our replication of Figure 4 in the paper. The legend describes which dots represent which model._
 
 <p align="center">
  <img src="/code/fig5results/figure5.png" width=600>
 </p>
+
 _Figure 5: Our replication of Figure 5 in the paper. The legend describes which dots represent which model._
+
 
 We excluded the human trials. Both replications show some different results than their original. Figure 4 also shows different shape fraction averages compared with the original figure 4, where as figure 5 has the same fraction averages. 
 
