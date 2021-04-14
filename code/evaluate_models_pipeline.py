@@ -8,7 +8,6 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 import torch
 import torchvision
 from torchvision import datasets, models
@@ -25,7 +24,6 @@ def get_model(model_name, stylized=False):
     # googlenet 
     # resnet_50 
     model = None
-    model_name = str.lower(model_name)
 
     if not stylized:
         model_name = str.lower(model_name)
@@ -40,7 +38,7 @@ def get_model(model_name, stylized=False):
         elif model_name == "resnet101":
             model = models.resnet101(True, True)
         else:
-            raise NotImplementedError(f"No implemented model for name {model_name}")
+            raise NotImplementedError("No implemented model for name:" + model_name)
     if stylized:
         model = load_stylized_model(model_name)
     if model != None:
@@ -62,7 +60,7 @@ def load_stylized_model(model_name):
 
     if "resnet50" in model_name:
         print("Using the ResNet50 architecture.")
-        assert model_name in model_urls, "You have not specified the resnet50 name correctly. Choose one of the following: resnet50_trained_on_SIN, resnet50_trained_on_SIN_and_IN, resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN"
+        assert model_name in model_urls, f"You have not specified the resnet50 name correctly. Choose one of the following: resnet50_trained_on_SIN, resnet50_trained_on_SIN_and_IN, resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN, given name: {model_name}"
         model = torchvision.models.resnet50(pretrained=False)
         model = torch.nn.DataParallel(model)
         checkpoint = model_zoo.load_url(model_urls[model_name], map_location=device)
@@ -111,22 +109,24 @@ def load_test_set(path_to_test_set):
 def run_model_on_test_set(model, test_set, class_labels, imgs):
     """Runs the given model on the given test set and returns a list of tuples of: (predicted label, actual label, image url)
     """
-    results = []
-    for i, data in tqdm(enumerate(test_set), total=len(test_set)):
-        images, labels = data
-        model_output = model(images)
-        # get softmax output
-        softmax_output = torch.softmax(model_output, 1)  # replace with your favourite CNN
-        # convert to numpy
-        softmax_output_numpy = softmax_output.cpu().detach().numpy().flatten()  # replace with conversion
-        # create mapping
-        mapping = ImageNetProbabilitiesTo16ClassesMapping()
-        # obtain decision 
-        prediction = mapping.probabilities_to_decision(softmax_output_numpy)
-        img_url = imgs[i][0]
-        actual = class_labels[labels.item()]
-        results.append((prediction, actual, img_url))
-    return results
+    model.eval()
+    with torch.no_grad():
+        results = []
+        for i, data in tqdm(enumerate(test_set), total=len(test_set)):
+            images, labels = data
+            model_output = model(images)
+            # get softmax output
+            softmax_output = torch.softmax(model_output, 1)  # replace with your favourite CNN
+            # convert to numpy
+            softmax_output_numpy = softmax_output.cpu().detach().numpy().flatten()  # replace with conversion
+            # create mapping
+            mapping = ImageNetProbabilitiesTo16ClassesMapping()
+            # obtain decision 
+            prediction = mapping.probabilities_to_decision(softmax_output_numpy)
+            img_url = imgs[i][0]
+            actual = class_labels[labels.item()]
+            results.append((prediction, actual, img_url))
+        return results
 
 def output_results_to_file(model_name, results, output_file_path, session = 1):
     # subj,session,trial,rt,object_response,category,condition,imagename
