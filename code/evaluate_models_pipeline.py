@@ -43,6 +43,8 @@ def get_model(model_name, stylized=False):
             raise NotImplementedError(f"No implemented model for name {model_name}")
     if stylized:
         model = load_stylized_model(model_name)
+    if model != None:
+        model.eval()
     return model
 
 
@@ -116,7 +118,7 @@ def run_model_on_test_set(model, test_set, class_labels, imgs):
         # get softmax output
         softmax_output = torch.softmax(model_output, 1)  # replace with your favourite CNN
         # convert to numpy
-        softmax_output_numpy = softmax_output.detach().numpy().flatten()  # replace with conversion
+        softmax_output_numpy = softmax_output.cpu().detach().numpy().flatten()  # replace with conversion
         # create mapping
         mapping = ImageNetProbabilitiesTo16ClassesMapping()
         # obtain decision 
@@ -144,7 +146,7 @@ def main(model_name, stylized, path_to_test_set, output_file_path):
     logging.basicConfig(filename=log_name, encoding='utf-8', level=logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     logging.info(f"Starting test set evaluation for model: {model_name}")
-    logging.info(f"This log file will be saved at: {log_name}")
+    # logging.info(f"This log file will be saved at: {log_name}")
     # if stylized: # Not necessary anymore as the model is mapped and loaded to cpu
         # logging.info("""Running the pretrained stylized models requires torch to be compiled with CUDA... 
         # If this does not work for you make sure to install the recommended version with cuda support:
@@ -157,17 +159,17 @@ def main(model_name, stylized, path_to_test_set, output_file_path):
     results = run_model_on_test_set(model, test_set, class_labels, imgs)
     logging.info(f"Writing results to output file: {output_file_path}")
     output_results_to_file(model_name, results, output_file_path)
-    logging.info(f"Evaluation complete! Results can be viewed at {output_file_path}")
+    logging.info(f"Evaluation complete! Results can be viewed at {os.path.abspath(output_file_path)}")
     return
 
+USAGE = """Specified an invalid ammount of arguments. Pass either 4 or 5 arguments:
+"python evaluate_models_pipeline.py [model name] [path to test set] [path for output file] [-s]"
+here "-s" can be added to load the model trained on the stylized imagenet dataset..."""
 
 if __name__ == "__main__":
     args = sys.argv
     if len(args) < 4 or len(args) > 5:
-        raise RuntimeError("""Specified an invalid ammount of arguments. Pass either 4 or 5 arguments:
-        "python evaluate_models_pipeline.py [model name] [path to test set] [path for output file] [-s]"
-        here "-s" can be added to load the model trained on the stylized imagenet dataset...
-        """)
+        raise RuntimeError(USAGE)
     model = args[1]
     path_to_test_set = args[2]
     output_file_path = args[3]
