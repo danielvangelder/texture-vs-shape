@@ -58,7 +58,7 @@ As the authors did a lot of experiments, it was infeasible for us to replicate t
  <img src="/code/fig5results/figure5.png" width=600>
 </p>
 
-
+We excluded the human trials. Both replications show some different results than their original. Figure 4 also shows different shape fraction averages compared with the original figure 4, where as figure 5 has the same fraction averages. 
 
 ## Additional Dataset
 <!-- Daniel -->
