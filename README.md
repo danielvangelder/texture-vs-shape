@@ -1,136 +1,71 @@
-# Data, code and materials from <br>"ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness"
+# CS4240 Reproducibility Project: ImageNet-trained CNNs are biased towards texture
 
-This repository contains information, data and materials from the paper [ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness](https://openreview.net/forum?id=Bygh9j09KX) by Robert Geirhos, Patricia Rubisch, Claudio Michaelis, Matthias Bethge, Felix A. Wichmann, and Wieland Brendel. We hope that you may find this repository a useful resource for your own research.
+## Authors
 
-The core idea is explained in the Figure below: If a Convolutional Neural Network sees a cat with elephant texture, it thinks it's an elephant even though the shape is still clearly a cat. We found this "texture bias" to be common for ImageNet-trained CNNs, which is in contrast to the widely held belief that CNNs mostly learn to recognise objects by detecting their shapes.
-![intro_figure](./paper-figures/introduction/intro_figure.png) 
+ - Just van Stam
+ - Daniël van Gelder ([d.vangelder-1@student.tudelft.nl](d.vangelder-1@student.tudelft.nl))
 
-Please don't hesitate to contact me at robert.geirhos@bethgelab.org or open an issue in case there is any question! Reproducibility & Open Science are important to me, and I appreciate feedback on what could be improved.
+## Introduction
 
-This README is structured according to the repo's structure: one section per subdirectory (alphabetically).
+The paper by Geirhos et al. \[1\] provides a novel perspective on the performance on ImageNet-trained CNNs. They argue that while it is commonly thought that Deep CNNs recognise objects by learning abstract representations of their shape, they rather learn to recognize objects by their texture(s). This is in contrast to how humans recognize objects, which is primarily by shape. 
 
-##### Related repositories:
-Note that Stylized-ImageNet, an important dataset used in this paper, has its own repository at [rgeirhos:Stylized-ImageNet](https://github.com/rgeirhos/Stylized-ImageNet).
+Through a comparative study, the authors demonstrate that many state-of-the-art CNN models (e.g. ResNet, AlexNet, GoogleNet, etc.) trained om ImageNet base their predictions on textures while humans base their respective predictions on shape. This result is achieved by performing a "style transfer" on some of the images in ImageNet. The style transfer is performed by extracting the texture of a _style_ image and applying that on a _content_ image. See the figure below for an example provided by the authors:
 
-Some aspects of this repository are borrowed from our earlier work, "Generalisation in humans and deep neural networks" (published at NeurIPS 2018). The corresponding code, data and materials can be obtained from [rgeirhos:generalisation-humans-DNNs](https://github.com/rgeirhos/generalisation-humans-DNNs). For convencience, some human data from this repo (which are used in the texture-vs-shape work for comparison) are included here directly (under ``raw-data/raw-data-from-generalisation-paper/``).
+![Style transfer example](img/style-transfer-example.png)
+_Figure 1: Style transfer example where the leftmost image shows a picture of elephant skin used as the style image, the middle picture shows a picture of a cat used as the content image and the rightmost picture showing the style transfered result._
 
+When a model predicts the class of the image as its texture's class rather than its content's class, this is called a "cue conflict".
 
-## code
-The ``code/`` directory contains mapping functionality that can be used to determine the corresponding entry-level class (out of 16, e.g. "dog") from a vector of length 1,000 (softmax output of a typical ImageNet classifier). In order to use this, follow the steps below:
+After demonstrating that ImageNet trained CNNs are biased towards texture, the authors propose a solution to this phenomenon. A novel dataset is proposed built on top of ImageNet which applies style transfers to all images in ImageNet. This dataset is called "Stylized-Imagenet". 
 
-```python
-    # get softmax output
-    softmax_output = SomeCNN(input_image) # replace with your favourite CNN
+Using the AdaIN style transfer approach by Huang and Belongie \[2\], images from ImageNet are converted to stylized images using random paintings (in this case, the [Kaggle Painter By Numbers Dataset](https://www.kaggle.com/c/painter-by-numbers/data)). The authors hypothesize that when models like ResNet-50 are trained on Stylized ImageNet, the frequency of cue conflicts is significantly reduced.
 
-    # convert to numpy
-    softmax_output_numpy = SomeConversionToNumpy(softmax_output) # replace with conversion
+![Stylized ImageNet Examples](img/stylized-imagenet.png)
+_Figure 2: Style transfer examples where the content image is the picture on the left and its corresponding stylized versions are the ten images to the right._
 
-    # create mapping
-    mapping = probabilities_to_decision.ImageNetProbabilitiesTo16ClassesMapping()
-    
-    # obtain decision 
-    decision_from_16_classes = mapping.probabilities_to_decision(softmax_output_numpy)
-```
-
-## data-analysis
-The ``data-analysis/`` directory contains the main analysis script ``data-analysis.R`` and some helper functionality. All created plots will then be stored in the ``paper-figures/`` directory.
-
-Please note: For AlexNet, VGG-16 and GoogLeNet we used the caffe implementation; for ResNet-50 the torchvision implementation. When computing the shape bias for AlexNet and VGG-16 using torchvision, the values differ (as pointed out in issue #7). The shape bias of AlexNet is 25.3%, for VGG-16 it is 9.2%. Both shape bias values are lower than the ones reported in the paper that were obtained with caffe. This means that using the torchvision implementation, we obtain even more extreme texture bias for these two models. Generally we recommend using the torchvision implementation (more commonly used & up-to-date framework).
-
-## lab-experiment
-Everything necessary to run an experiment in the lab with human participants. This is based on MATLAB.
-
-##### experimental-code
-Contains the main MATLAB experiment, `shape_texture_experiment.m`, as well as a `.yaml` file where the specific parameter values used in an experiment are specified (such as the stimulus presentation duration). Some functions depend on our in-house iShow library which can be obtained from [here](http://dx.doi.org/10.5281/zenodo.34217).
-
-##### helper-functions
-Some of the helper functions are based on other people's code, please check out the corresponding files for the copyright notices.
+The results show that when ResNet-50 is trained on the Stylized-ImageNet the cue conflicts dramatically decrease. However, performance on the original ImageNet validation set is somewhat reduced. To combat this, the authors propose a model called Shape-ResNet which is trained on both ImageNet and Stylized-ImageNet and consequently fine-tuned on ImageNet again. This final model achieves a better score on the ImageNet task than the original ResNet-50 model.
 
 
-## models
-The file ``load_pretrained_models.py`` will load the following models that are trained on Stylized-ImageNet:
+## Paper Results 
+<!-- Just -->
 
-```python
-    model_A = "resnet50_trained_on_SIN"
-    model_B = "resnet50_trained_on_SIN_and_IN"
-    model_C = "resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN"
-```
-These correspond to the models reported in Table 2 of the paper (method details in Section A.5 of the Appendix). Additionally, AlexNet and VGG-16 trained on SIN are provided. Please note that the overall performance of those two models is not great since the hyperparameters used during training were likely suboptimal. The top1/top5 performance of VGG-16 trained on SIN and evaluated on ImageNet are: Prec@1 52.260 Prec@5 76.390 (evaluated on SIN: Prec@1 48.958 Prec@5 73.092).
+## Replication
+<!-- Just -->
 
-We used the [PyTorch ImageNet training script](https://github.com/pytorch/examples/tree/master/imagenet)  to train the models. These are the training hyperparameters:
+## Additional Dataset
+<!-- Daniel -->
+Besides replicating figure 5 using the pre-trained weights provided by the authors, we wanted to replicate it by retraining the model on the Stylized-ImageNet dataset. However, due to the licensing of the ImageNet dataset, the authors were not allowed to share the dataset used. Therefore, we had to create it on our own. However, due to the sheer size of the ImageNet dataset and the limited hardware available for the style transfers, we opted to recreate a downsampled version of Stylized-ImageNet with a resolution of 64x64. It turned out to not be possible within the limit of the budget to train the ResNet-50 model on this dataset, therefore we opted to only  create the dataset.
 
-- batch size: 256
-- optimizer: SGD (`torch.optim.SGD`)
-- momentum: 0.9
-- weight decay: 1e-4
-- number of epochs: 60 (`model_A`) respectively 45 (`model_B`). However, these 45 epochs for `model_B` correspond to 90 epochs of normal ImageNet training since the dataset used to train `model_B` is twice as large (combined ImageNet and Stylized-ImageNet), thus in every epoch the classifier sees twice as many images as in a standard epoch.
-- learning rate: 0.1 multiplied by 0.1 after every 20 epochs (`model_A`) respectively after every 15 epochs (`model_B`).
-- pretrained on ImageNet: True (for `model_A` and for `model_B`), i.e. using `torchvision.models.resnet50(pretrained=True)`. Initialising models weights with the standard weights from ImageNet training proved beneficial for overall accuracy.
-
-`model_C` was initialised with the weights of `model_B`. Fine-tuning on ImageNet was then performed for 60 epochs using a learning rate of 0.01 multiplied by 0.1 after 30 epochs. The other hyperparameters (batch size, optimizer, momentum & weight decay) were identical to the ones used for training `model_A` and `model_B`.
-
-For dataset preprocessing, we used the standard ImageNet normalization for both IN and SIN (as e.g. used in the [PyTorch ImageNet training script](https://github.com/pytorch/examples/tree/master/imagenet)), with the following mean and standard deviation:
-
-- mean = [0.485, 0.456, 0.406]
-- std = [0.229, 0.224, 0.225]
-
-These were the training transformations:
-
-```python
-    train_transforms = transforms.Compose([
-                                  transforms.RandomResizedCrop(224),
-                                  transforms.RandomHorizontalFlip(),
-                                  transforms.ToTensor()])
-```
-
-and those the validation transformations:
-```python                                  
-    val_transforms = transforms.Compose([
-                                      transforms.Resize(256),
-                                      transforms.CenterCrop(224),
-                                      transforms.ToTensor()])                 
-```
-Input format: RGB.
-
-#### Shape bias and IN accuracies of different SIN-trained models
-
-These are the shape bias values of the four models mentioned above. As a rough guideline, the more epochs a model was trained on ImageNet the lower its shape bias; the more epochs a model was trained on Stylized-ImageNet the higher its shape bias. Fine-tuning on ImageNet (as for model_C) leads to improved ImageNet performance, even better than a standard ResNet-50, but it also means that the model "forgets" the shape bias it had before finetuning.
-
-| model | shape bias | top-1 IN acc | top-5 IN acc |
-|---|---|---|---|
-| standard ResNet-50 | 21.39% | 76.13 | 92.86 |
-| model_A            | 81.37% | 60.18 | 82.62 |
-| model_B            | 34.65% | 74.59 | 92.14 |
-| model_C            | 20.54% | 76.72 | 93.28 |
-
-Note that these values are computed using a slightly different probability aggregation method as reported in the paper. We here used the average: ImageNet class probabilities were mapped to the corresponding 16-class-ImageNet category using the average of all corresponding fine-grained category probabilities. We recommend using this approach instead of other aggregation methods (summation, max, ...). The updated appendix of [this paper](https://arxiv.org/abs/1808.08750), page 22f, describes why the average aggregation method is the principled and preferable way.
-
-## paper-figures
-Contains all figures of the paper. All figures reporting results can be generated by the scripts in `data-analysis/`.
+Creating this dataset was non-trivial as it requires sophisticated compute hardware. We initially attempted to run this on a Google Cloud VM could not create an instance with a fast enough VM to create the dataset in a reasonable amount of time. Thus, we tried to create the dataset in Colab Notebooks using Colab Pro. This turned out to be possible. We created the dataset in 10 batches taking approximately ~2.5 hours per batch. 
 
 
-## raw-data
-Here, a ``.csv`` file for each observer and network experiment contains the raw data, including a total number of 48,560 human psychophysical trials across 97 participants in a controlled lab setting.
+
+## Conclusion
+<!-- Daniel -->
+<!-- Future work -->
+With this reproduction we have replicated a portion of the results in the paper by Geirhos et al. Our work indicates that ImageNet trained CNNs indeed are biased towards textures. As future work, we propose that, using the downsampled dataset that was created with this project, the ResNet-50 model is re-trained using that dataset to further confirm the results put forward by the authors. 
+
+## References
+- \[1\]: Geirhos, R., Rubisch, P., Michaelis, C., Bethge, M., Wichmann, F. A., & Brendel, W. (2018). ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness. _arXiv preprint arXiv:1811.12231_
+
+- \[2\]: Huang, X., & Belongie, S. (2017). Arbitrary style transfer in real-time with adaptive instance normalization. In _Proceedings of the IEEE International Conference on Computer Vision_ (pp. 1501-1510).
+Chicago	
 
 
-## stimuli
-These are the raw stimuli used in our experiments. Each directory contains stimuli images split into 16 subdirectories (one per category).
+# Using this Repository
 
+## Replicating the figures
+In order to create the data to create the figures from this report, run the script `code/evaluate_models.pipeline.py` with the following arguments:
 
-# FAQ
+1. model name
+2. stimuli directory (in our case: `stimuli/style-transfer-preprocessed-512`) 
+3. output csv file name
+4. if using stylized pretrained models, add `-s`
 
-#### Code to run style transfer:
-I used [Leon Gatys' code](https://github.com/leongatys/PytorchNeuralStyleTransfer) to run style transfer with default settings and hyperparameters as specified in the code. The final content and style loss depend on the image.
+Create the figures in the notebook `code/ReproduceFigures.ipynb`
 
-#### Can you share Stylized-ImageNet directly?
-Unfortunately, due to copyright restrictions I am not allowed to share this version of ImageNet directly, since not all of the original ImageNet images are permitted for using / sharing / modification.
+## Creating the stylized dataset
 
-#### In addition to the cue conflict stimuli, can you share the stimuli for the texture experiment / the 'original' experiment / ...?
-Unfortunately, the image permissions do not allow me to share or distribute these stimuli.
+The code to create the stylized dataset can be found in the repository by the original authors: 
 
-#### How do I compute the shape bias of a model?
-1. Evaluate your models on all 1,280 images here (https://github.com/rgeirhos/texture-vs-shape/tree/master/stimuli/style-transfer-preprocessed-512).
-2. Map model decisions to 16 classes using the code provided above (https://github.com/rgeirhos/texture-vs-shape#code).
-3. Exclude images without a cue conflict (e.g. texture=cat, shape=cat).
-4. Take the subset of "correctly" classified images (either shape or texture category correctly predicted).
-5. Compute "shape bias" as the following fraction: (correct shape decisions) / (correct shape decisions + correct texture decisions).
+https://github.com/bethgelab/stylize-datasets

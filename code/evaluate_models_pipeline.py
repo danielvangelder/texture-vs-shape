@@ -8,7 +8,6 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 import torch
 import torchvision
 from torchvision import datasets, models
@@ -40,9 +39,11 @@ def get_model(model_name, stylized=False):
         elif model_name == "resnet101":
             model = models.resnet101(True, True)
         else:
-            raise NotImplementedError(f"No implemented model for name {model_name}")
+            raise NotImplementedError("No implemented model for name:" + model_name)
     if stylized:
         model = load_stylized_model(model_name)
+    if model != None:
+        model.eval()
     return model
 
 
@@ -59,8 +60,8 @@ def load_stylized_model(model_name):
     device = torch.device('cpu')
 
     if "resnet50" in model_name:
-        assert model_name in model_urls.keys(), "You have not specified the resnet50 name correctly ({}). Choose one of the following: resnet50_trained_on_SIN, resnet50_trained_on_SIN_and_IN, resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN".format(
-            model_name)
+        print("Using the ResNet50 architecture.")
+        assert model_name in model_urls, f"You have not specified the resnet50 name correctly. Choose one of the following: resnet50_trained_on_SIN, resnet50_trained_on_SIN_and_IN, resnet50_trained_on_SIN_and_IN_then_finetuned_on_IN, given name: {model_name}"
         model = torchvision.models.resnet50(pretrained=False)
         model = torch.nn.DataParallel(model)
         checkpoint = model_zoo.load_url(model_urls[model_name], map_location=device)
@@ -70,8 +71,7 @@ def load_stylized_model(model_name):
         # download model from URL manually and save to desired location
         filepath = "./vgg16_train_60_epochs_lr0.01-6c6fcc9f.pth.tar"
 
-        assert os.path.exists(
-            filepath), "Please download the VGG model yourself from the following link and save it locally: https://drive.google.com/drive/folders/1A0vUWyU6fTuc-xWgwQQeBvzbwi6geYQK (too large to be downloaded automatically like the other models)"
+        assert os.path.exists(filepath), "Please download the VGG model yourself from the following link and save it locally: https://drive.google.com/drive/folders/1A0vUWyU6fTuc-xWgwQQeBvzbwi6geYQK (too large to be downloaded automatically like the other models)"
 
         model = torchvision.models.vgg16(pretrained=False)
         model.features = torch.nn.DataParallel(model.features)
@@ -80,7 +80,7 @@ def load_stylized_model(model_name):
 
     elif "alexnet" in model_name:
         print("Using the AlexNet architecture.")
-        model_name = "alexnet_trained_on_SIN"
+        model_name = "alexnet_trained_on_SIN" 
         model = torchvision.models.alexnet(pretrained=False)
         model.features = torch.nn.DataParallel(model.features)
         checkpoint = model_zoo.load_url(model_urls[model_name], map_location=device)
@@ -103,33 +103,33 @@ def load_test_set(path_to_test_set):
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
     test_set = datasets.ImageFolder(path_to_test_set, transform=transform)
-    test = DataLoader(test_set, batch_size=1, shuffle=False)  # Load in batches of size 1
+    test = DataLoader(test_set, batch_size=1, shuffle=False) # Load in batches of size 1
     class_labels = {v: k for k, v in test_set.class_to_idx.items()}
     return class_labels, test, test_set.imgs
-
 
 def run_model_on_test_set(model, test_set, class_labels, imgs):
     """Runs the given model on the given test set and returns a list of tuples of: (predicted label, actual label, image url)
     """
-    results = []
-    for i, data in tqdm(enumerate(test_set), total=len(test_set)):
-        images, labels = data
-        model_output = model(images)
-        # get softmax output
-        softmax_output = torch.softmax(model_output, 1)  # replace with your favourite CNN
-        # convert to numpy
-        softmax_output_numpy = softmax_output.detach().numpy().flatten()  # replace with conversion
-        # create mapping
-        mapping = ImageNetProbabilitiesTo16ClassesMapping()
-        # obtain decision 
-        prediction = mapping.probabilities_to_decision(softmax_output_numpy)
-        img_url = imgs[i][0]
-        actual = class_labels[labels.item()]
-        results.append((prediction, actual, img_url))
-    return results
+    model.eval()
+    with torch.no_grad():
+        results = []
+        for i, data in tqdm(enumerate(test_set), total=len(test_set)):
+            images, labels = data
+            model_output = model(images)
+            # get softmax output
+            softmax_output = torch.softmax(model_output, 1)  # replace with your favourite CNN
+            # convert to numpy
+            softmax_output_numpy = softmax_output.cpu().detach().numpy().flatten()  # replace with conversion
+            # create mapping
+            mapping = ImageNetProbabilitiesTo16ClassesMapping()
+            # obtain decision 
+            prediction = mapping.probabilities_to_decision(softmax_output_numpy)
+            img_url = imgs[i][0]
+            actual = class_labels[labels.item()]
+            results.append((prediction, actual, img_url))
+        return results
 
-
-def output_results_to_file(model_name, results, output_file_path, session=1):
+def output_results_to_file(model_name, results, output_file_path, session = 1):
     # subj,session,trial,rt,object_response,category,condition,imagename
     # alexnet,1,1,NaN,bicycle,airplane,0,0001_s5n_dnn_0_airplane_00_airplane1-bicycle2.png
     # alexnet,1,29,NaN,airplane,airplane,0,0029_s5n_dnn_0_airplane_00_airplane3-oven1.png
@@ -144,33 +144,33 @@ def output_results_to_file(model_name, results, output_file_path, session=1):
 def main(model_name, stylized, path_to_test_set, output_file_path):
     now = datetime.now()
     log_name = now.strftime("Log_run_%Y-%m-%d-%H-%M")
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(filename=log_name, encoding='utf-8', level=logging.INFO)
+    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     logging.info(f"Starting test set evaluation for model: {model_name}")
-    logging.info(f"This log file will be saved at: {log_name}")
+    # logging.info(f"This log file will be saved at: {log_name}")
     # if stylized: # Not necessary anymore as the model is mapped and loaded to cpu
-    # logging.info("""Running the pretrained stylized models requires torch to be compiled with CUDA...
-    # If this does not work for you make sure to install the recommended version with cuda support:
-    # pip install torch==1.8.0+cu111 torchvision==0.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html""")
+        # logging.info("""Running the pretrained stylized models requires torch to be compiled with CUDA... 
+        # If this does not work for you make sure to install the recommended version with cuda support:
+        # pip install torch==1.8.0+cu111 torchvision==0.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html""")
     logging.info(f"Loading model with pretrained parameters. Is trained on stylized dataset?: {stylized}")
     model = get_model(model_name, stylized)
     logging.info(f"Loading test set on path {path_to_test_set}")
     class_labels, test_set, imgs = load_test_set(path_to_test_set)
-
     logging.info(f"Running model on test set")
     results = run_model_on_test_set(model, test_set, class_labels, imgs)
     logging.info(f"Writing results to output file: {output_file_path}")
     output_results_to_file(model_name, results, output_file_path)
-    logging.info(f"Evaluation complete! Results can be viewed at {output_file_path}")
+    logging.info(f"Evaluation complete! Results can be viewed at {os.path.abspath(output_file_path)}")
     return
 
+USAGE = """Specified an invalid ammount of arguments. Pass either 4 or 5 arguments:
+"python evaluate_models_pipeline.py [model name] [path to test set] [path for output file] [-s]"
+here "-s" can be added to load the model trained on the stylized imagenet dataset..."""
 
 if __name__ == "__main__":
     args = sys.argv
     if len(args) < 4 or len(args) > 5:
-        raise RuntimeError("""Specified an invalid ammount of arguments. Pass either 4 or 5 arguments:
-        "python evaluate_models_pipeline.py [model name] [path to test set] [path for output file] [-s]"
-        here "-s" can be added to load the model trained on the stylized imagenet dataset...
-        """)
+        raise RuntimeError(USAGE)
     model = args[1]
     path_to_test_set = args[2]
     output_file_path = args[3]
