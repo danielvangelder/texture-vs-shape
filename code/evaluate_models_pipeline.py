@@ -36,6 +36,7 @@ def get_model(model_name, stylized=False):
             model = models.googlenet(pretrained=True, progress=True)
         elif model_name == "resnet50":
             model = models.resnet50(pretrained=True, progress=True)
+            model.eval()
         elif model_name == "resnet101":
             model = models.resnet101(True, True)
         else:
