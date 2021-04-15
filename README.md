@@ -51,22 +51,24 @@ All models perform overall worse on the cue conflict validation set than on the 
 _Figure 4 (paper Figure 5): Classification results for human observers (red circles) and results of resnet50 trained on the normal ImageNet (grey squares) vs resnet50 trained on Stylized-ImageNet (orange squares)_
 
 ## Replication
-As the authors performed a lot of experiments, it was infeasible for us to replicate them all. We focussed on replicating Figure 4 and Figure 5. We ran the different models on the cue conflict validation set, like the authors did, to create the replicated figures 4 and 5 below: 
+As the authors performed a lot of experiments, it was infeasible for us to replicate them all. We focussed on replicating Figure 3 and Figure 4. We ran the different models on the cue conflict validation set, like the authors did, to create the replicated figures below: 
 
 <p align="center">
- <img src="/code/fig4results/figure4_new.png" width=600>
+ <img src="/code/fig4results/figure4_last.png" width=600>
 </p>
 
 _Figure 5: Our replication of Figure 4 in the paper. The legend describes which dots represent which model._
 
 <p align="center">
- <img src="/code/fig5results/figure5.png" width=600>
+ <img src="/code/fig5results/figure5_last.png" width=600>
 </p>
 
 _Figure 6: Our replication of Figure 5 in the paper. The legend describes which dots represent which model._
 
 
-We excluded the human trials. Both replications show some different results than their original. Figure 4 also shows different shape fraction averages compared with the original figure 4, where as figure 5 has the same fraction averages. 
+We excluded the human trials. Both replications show different results relative to their original. Figure 5 also shows different shape fraction averages compared with figure 3, where as figure 6 has the same fraction averages as figure 4. While there are differences between the original results and our results, the shape decision fractions per category do not differ a lot. For all four models in figure 5 the same conclusions can be drawn, that the state-of-the-art models make most of the decisions based on the texture of the image. In our figure all models except resnet perform even poorer on the shape decision fraction than in the original results. The same goes for figure 6, which shows that the resnet50 trained on the Stylized-ImageNet performs better in general and makes more decisions based on shape. 
+
+We do not completely understand why we are not generating the exact same results. As the authors didn't supply the source code for generating the results, it is possible that they ran their test with slight alterations in the image preprocessing. And they used some of the predefined models from the Caffe framework, while we used the predefined versions of pytorch. It is possible that these models produce small inconsistencies. 
 
 ## Additional Dataset
 <!-- Daniel -->
