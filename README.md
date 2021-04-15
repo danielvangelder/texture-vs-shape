@@ -1,8 +1,12 @@
 # CS4240 Reproducibility Project: ImageNet-trained CNNs are biased towards texture
 
+<p align="center">
+ <img src="img/bicycle-stylized-2.jpg" width=600>
+</p>
+
 ## Authors
 
- - Just van Stam
+ - Just van Stam ([j.a.vanstam@student.tudelft.nl](j.a.vanstam@student.tudelft.nl))
  - Daniël van Gelder ([d.vangelder-1@student.tudelft.nl](d.vangelder-1@student.tudelft.nl))
 
 ## Introduction
@@ -28,11 +32,11 @@ The results show that when ResNet-50 is trained on the Stylized-ImageNet the cue
 
 ## Paper Results 
 
-The authors of the paper researched many state of the art CNN models. One of the focus points were ResNet-50, AlexNet, GoogLeNet and VGG-16. The authors used these models to predict 1280 images from 16 different ImageNet categories. All images contained a cue conflict from one of the other categories. Each of the models has a 1000 category output, so these outputs are mapped to the 16 remaining categories. In the image below, both the overall performance per category (right bar plots) and the fraction of shape decisions is established. The fraction of shape decisions is calculated by first finding all images with cue conflicts that are correctly classified. Meaning by correctly predicting either the shape or the texture of the image. The fraction of shape decisions is than the number of images correctly classified by shape devided by the total correctly classified images previously calculated.
+The authors of the paper researched many state of the art CNN models. One of the focus points were ResNet-50, AlexNet, GoogLeNet and VGG-16. The authors used these models to predict 1280 images from 16 different ImageNet categories. All images contained a cue conflict from one of the other categories. Each of the models has a 1000 category output, so these outputs are mapped to the 16 remaining categories. In the image below, both the overall performance per category (right bar plots) and the fraction of shape decisions is established. The fraction of shape decisions is calculated by first finding all images with cue conflicts that are correctly classified. Meaning by correctly predicting either the shape or the texture of the image. The fraction of shape decisions is than the number of images correctly classified by shape divided by the total correctly classified images previously calculated:  
 ((correct shape decisions) / (correct shape decisions + correct texture decisions))
 
 <p align="center">
- <img src="https://user-images.githubusercontent.com/10252263/114720759-95affc00-9d38-11eb-8612-803c277c91ea.jpg" width=600>
+ <img src="img/paper_figure_4.jpg" width=600>
 </p>
 
 _Figure 3 (paper Figure 4): Classification results for human observers (red circles) and ImageNet-trained networks AlexNet (purple diamonds), VGG16 (blue triangles), GoogLeNet (turquoise circles) and ResNet-50 (grey squares)._
@@ -45,7 +49,7 @@ All models perform overall worse on the cue conflict validation set than on the 
 
 
 <p align="center">
- <img src="https://user-images.githubusercontent.com/10252263/114721069-dc055b00-9d38-11eb-90ae-ebe02735e826.jpg" width=600>
+ <img src="img/paper_figure_5.jpg" width=600>
 </p>
 
 _Figure 4 (paper Figure 5): Classification results for human observers (red circles) and results of resnet50 trained on the normal ImageNet (grey squares) vs resnet50 trained on Stylized-ImageNet (orange squares)_
@@ -54,41 +58,47 @@ _Figure 4 (paper Figure 5): Classification results for human observers (red circ
 As the authors performed a lot of experiments, it was infeasible for us to replicate them all. We focussed on replicating Figure 3 and Figure 4. We ran the different models on the cue conflict validation set, like the authors did, to create the replicated figures below: 
 
 <p align="center">
- <img src="/code/fig4results/figure4_last.png" width=600>
+ <img src="code/fig4results/figure4_last.png" width=600>
 </p>
 
 _Figure 5: Our replication of Figure 4 in the paper. The legend describes which dots represent which model._
 
 <p align="center">
- <img src="/code/fig5results/figure5_last.png" width=600>
+ <img src="code/fig5results/figure5_last.png" width=600>
 </p>
 
 _Figure 6: Our replication of Figure 5 in the paper. The legend describes which dots represent which model._
 
 
-We excluded the human trials. Both replications show different results relative to their original. Figure 5 also shows different shape fraction averages compared with figure 3, where as figure 6 has the same fraction averages as figure 4. While there are differences between the original results and our results, the shape decision fractions per category do not differ a lot. For all four models in figure 5 the same conclusions can be drawn, that the state-of-the-art models make most of the decisions based on the texture of the image. In our figure all models except resnet perform even poorer on the shape decision fraction than in the original results. The same goes for figure 6, which shows that the resnet50 trained on the Stylized-ImageNet performs better in general and makes more decisions based on shape. 
+We excluded the human trials on purpose, as it would suggest that we re-ran the human trial. Both replications show different results relative to their original. Figure 5 also shows different shape fraction averages compared with Figure 3, whereas Figure 6 has the same fraction averages as Figure 4. While there are differences between the original results and our results, the shape decision fractions per category do not differ a lot. For all four models in Figure 5 the same conclusions can be drawn, that the state-of-the-art models make most of the decisions based on the texture of the image. In our figure all models except resnet perform even poorer on the shape decision fraction than in the original results. The same goes for Figure 6, which shows that the ResNet-50 trained on the Stylized-ImageNet performs better in general and makes more decisions based on shape. 
 
-| Avg Fraction of shape decisions | Original | Reproduced |
+| Model                           | Original | Reproduced |
 |---------------------------------|----------|------------|
 | AlexNet                         | 0.43     | 0.26       |
-| GoogleNet                       | 0,31     | 0.25       |
-| ResNet50                        | 0.22     | 0.22       |
-| VGG-16                          | 0,17     | 0.11       |
+| GoogleNet                       | 0.31     | 0.25       |
+| ResNet-50                       | 0.22     | 0.22       |
+| VGG-16                          | 0.17     | 0.11       |
+| ResNet-50 Stylized              | 0.81     | 0.81       |
 
-We do not completely understand why we are not generating the exact same results. As the authors didn't supply the source code for generating the results, it is possible that they ran their test with slight alterations in the image preprocessing. And they used some of the predefined models from the Caffe framework, while we used the predefined versions of pytorch. It is possible that these models produce small inconsistencies. 
+_Table 1: Average Fraction of shape decisions between original paper and reproduction_
+
+
+We do not completely understand why we are not generating the exact same results. As the authors did not supply the exact source code for generating the results, it is possible that they ran their test with slight alterations in the image preprocessing. In addition, they used some of the pre-defined models from the Caffe framework, while we used the predefined versions of PyTorch. It is possible that these models produce small inconsistencies. We do note, however, that the results still confirm the authors' findings. That is, that ImageNet-trained CNNs primarily base their object recognition decisions on textures rather than shape.
 
 ## Additional Dataset
 <!-- Daniel -->
-Besides replicating Figure 5 using the pre-trained weights provided by the authors, we wanted to replicate it by retraining the model on the Stylized-ImageNet dataset. However, due to the licensing of the ImageNet dataset, the authors were not allowed to share the dataset used. Therefore, we had to create it on our own. However, due to the sheer size of the ImageNet dataset and the limited hardware available for the style transfers, we opted to recreate a downsampled version of Stylized-ImageNet with a resolution of 64x64. It turned out to not be possible within the limit of the budget to train the ResNet-50 model on this dataset, therefore we opted to only  create the dataset.
+Besides replicating Figure 5 using the pre-trained weights provided by the authors, we wanted to replicate it by retraining the model on the Stylized-ImageNet dataset. However, due to the licensing of the ImageNet dataset, the authors were not allowed to share the dataset used. Therefore, we had to create it on our own. However, due to the sheer size of the ImageNet dataset and the limited hardware available for the style transfers, we opted to recreate a downsampled version of Stylized-ImageNet with a resolution of 64x64. 
 
-Creating this dataset was non-trivial as it requires sophisticated compute hardware. We initially attempted to run this on a Google Cloud VM could not create an instance with a fast enough VM to create the dataset in a reasonable amount of time. Thus, we tried to create the dataset in Colab Notebooks using Colab Pro. This turned out to be possible. We created the dataset in 10 batches taking approximately ~3.5 hours per batch. 
+Creating this dataset was non-trivial as it requires sophisticated compute hardware. We initially attempted to run this on a Google Cloud VM could not create an instance with a sophisticated enough GPU within budget to create the dataset in a reasonable amount of time. Thus, we tried to create the dataset in Colab Notebooks using Colab Pro. This turned out to be possible. We created the dataset in 10 batches taking approximately ~3.5 hours per batch. 
+
+Then we tried to train ResNet-50 to this dataset. However, we went over budget in setting up a VM to train the model on the dataset. Therefore, we leave training the model to this downsampled dataset as future work. Our contribution will therefore be limited to the additional dataset. It should be interesting to evaluate if a ResNet-50 model trained on the downsampled stylized dataset will be as effective as when it is trained on the original stylized dataset. It may be that shapes are not as apparant in this downsampled version.
 
 
 
 ## Conclusion
 <!-- Daniel -->
 <!-- Future work -->
-With this reproduction we have replicated a portion of the results in the paper by Geirhos et al. Our work indicates that ImageNet trained CNNs indeed are biased towards textures. As future work, we propose that, using the downsampled dataset that was created with this project, the ResNet-50 model is re-trained using that dataset to further confirm the results put forward by the authors. 
+With this reproduction we have replicated a portion of the results in the paper by Geirhos et al. Our work indicates that ImageNet trained CNNs are indeed biased towards iamge texture and thus confirm the authors' findings. As future work, we propose that, using the downsampled dataset that was created with this project, the ResNet-50 model is re-trained using that dataset to further confirm the results put forward by the authors. 
 
 ## References
 - \[1\]: Geirhos, R., Rubisch, P., Michaelis, C., Bethge, M., Wichmann, F. A., & Brendel, W. (2018). ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness. _arXiv preprint arXiv:1811.12231_
