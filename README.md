@@ -68,6 +68,13 @@ _Figure 6: Our replication of Figure 5 in the paper. The legend describes which 
 
 We excluded the human trials. Both replications show different results relative to their original. Figure 5 also shows different shape fraction averages compared with figure 3, where as figure 6 has the same fraction averages as figure 4. While there are differences between the original results and our results, the shape decision fractions per category do not differ a lot. For all four models in figure 5 the same conclusions can be drawn, that the state-of-the-art models make most of the decisions based on the texture of the image. In our figure all models except resnet perform even poorer on the shape decision fraction than in the original results. The same goes for figure 6, which shows that the resnet50 trained on the Stylized-ImageNet performs better in general and makes more decisions based on shape. 
 
+| Avg Fraction of shape decisions | Original | Reproduced |
+|---------------------------------|----------|------------|
+| AlexNet                         | 0.43     | 0.26       |
+| GoogleNet                       | 0,31     | 0.25       |
+| ResNet50                        | 0.22     | 0.22       |
+| VGG-16                          | 0,17     | 0.11       |
+
 We do not completely understand why we are not generating the exact same results. As the authors didn't supply the source code for generating the results, it is possible that they ran their test with slight alterations in the image preprocessing. And they used some of the predefined models from the Caffe framework, while we used the predefined versions of pytorch. It is possible that these models produce small inconsistencies. 
 
 ## Additional Dataset
