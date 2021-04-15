@@ -51,7 +51,7 @@ Figure 5: Classification results for human observers (red circles) and results o
 As the authors did a lot of experiments, it was infeasible for us to replicate them all. We focussed on replicating Figure 4 and Figure 5. We ran the different models on the cue conflict validation set, like the authors did, to create the replicated figure 4 and 5 below: 
 
 <p align="center">
- <img src="/code/fig4results/figure4.png" width=600>
+ <img src="/fig4results/figure4_new.png" width=600>
 </p>
 
 <p align="center">
