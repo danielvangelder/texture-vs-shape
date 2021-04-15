@@ -6,8 +6,8 @@
 
 ## Authors
 
- - Just van Stam ([j.a.vanstam@student.tudelft.nl](j.a.vanstam@student.tudelft.nl))
- - Daniël van Gelder ([d.vangelder-1@student.tudelft.nl](d.vangelder-1@student.tudelft.nl))
+ - Just van Stam, [j.a.vanstam@student.tudelft.nl](j.a.vanstam@student.tudelft.nl), 4473280  
+ - Daniël van Gelder, [d.vangelder-1@student.tudelft.nl](d.vangelder-1@student.tudelft.nl), 4551028
 
 ## Introduction
 
@@ -98,13 +98,34 @@ Then we tried to train ResNet-50 to this dataset. However, we went over budget i
 ## Conclusion
 <!-- Daniel -->
 <!-- Future work -->
-With this reproduction we have replicated a portion of the results in the paper by Geirhos et al. Our work indicates that ImageNet trained CNNs are indeed biased towards image texture and thus confirm the authors' findings. As future work we propose using the downsampled dataset that was created with this project and to train a ResNet-50 model using that dataset to further confirm the results put forward by the authors. 
+With this reproduction we have replicated a portion of the results in the paper by Geirhos et al. Our work indicates that ImageNet trained CNNs are indeed biased towards image texture and thus confirm the authors' findings. In addition, we have created a downsampled Stylized-ImageNet dataset to assist future research. As future work we propose using the downsampled dataset that was created with this project and to train a ResNet-50 model using that dataset to further confirm the results put forward by the authors. 
 
 ## References
 - \[1\]: Geirhos, R., Rubisch, P., Michaelis, C., Bethge, M., Wichmann, F. A., & Brendel, W. (2018). ImageNet-trained CNNs are biased towards texture; increasing shape bias improves accuracy and robustness. _arXiv preprint arXiv:1811.12231_
 
 - \[2\]: Huang, X., & Belongie, S. (2017). Arbitrary style transfer in real-time with adaptive instance normalization. In _Proceedings of the IEEE International Conference on Computer Vision_ (pp. 1501-1510).
 Chicago	
+
+## Group Responsibilities
+
+Below the task division between the group members is shown:
+
+### Just van Stam
+- Write figure generation code to convert raw data to replicated figures
+- Setup dataset stylization code: loading style transfer models and datasets and execute code
+- Write batch style transfer script for Colab
+- Setup cloud TPU for training ResNet
+- Create teaser image
+- Write and proof-read report
+
+### Daniël van Gelder
+- Setup model evaluation pipeline: downloading and loading model weights, running the model on the stylized test set and generating results file
+- Write script to validate batch completeness once style transfered
+- Main contact TA
+- Setup cloud TPU for training ResNet
+- Create poster
+- Write and proof-read report
+
 
 
 # Using this Repository
