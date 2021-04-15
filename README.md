@@ -63,7 +63,7 @@ _Figure 5: Our replication of Figure 4 in the paper. The legend describes which 
  <img src="/code/fig5results/figure5.png" width=600>
 </p>
 
-_Figure 5: Our replication of Figure 5 in the paper. The legend describes which dots represent which model._
+_Figure 6: Our replication of Figure 5 in the paper. The legend describes which dots represent which model._
 
 
 We excluded the human trials. Both replications show some different results than their original. Figure 4 also shows different shape fraction averages compared with the original figure 4, where as figure 5 has the same fraction averages. 
