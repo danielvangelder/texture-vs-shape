@@ -1,7 +1,7 @@
 # CS4240 Reproducibility Project: ImageNet-trained CNNs are biased towards texture
 
 <p align="center">
- <img src="img/bicycle-stylized-2.jpg" width=600>
+ <img src="img/bicycle-stylized-2.jpg" width=300>
 </p>
 
 ## Authors
