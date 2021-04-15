@@ -54,13 +54,13 @@ _Figure 4 (paper Figure 5): Classification results for human observers (red circ
 As the authors performed a lot of experiments, it was infeasible for us to replicate them all. We focussed on replicating Figure 4 and Figure 5. We ran the different models on the cue conflict validation set, like the authors did, to create the replicated figures 4 and 5 below: 
 
 <p align="center">
- <img src="/code/fig4results/figure4_new.png" width=600>
+ <img src="/code/fig4results/figure4_last.png" width=600>
 </p>
 
 _Figure 5: Our replication of Figure 4 in the paper. The legend describes which dots represent which model._
 
 <p align="center">
- <img src="/code/fig5results/figure5.png" width=600>
+ <img src="/code/fig5results/figure5_last.png" width=600>
 </p>
 
 _Figure 6: Our replication of Figure 5 in the paper. The legend describes which dots represent which model._
