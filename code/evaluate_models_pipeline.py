@@ -35,6 +35,7 @@ def get_model(model_name, stylized=False):
             model = models.googlenet(pretrained=True, progress=True)
         elif model_name == "resnet50":
             model = models.resnet50(pretrained=True, progress=True)
+            model.eval()
         elif model_name == "resnet101":
             model = models.resnet101(True, True)
         else:
@@ -143,7 +144,7 @@ def output_results_to_file(model_name, results, output_file_path, session = 1):
 def main(model_name, stylized, path_to_test_set, output_file_path):
     now = datetime.now()
     log_name = now.strftime("Log_run_%Y-%m-%d-%H-%M")
-    logging.basicConfig(filename=log_name, encoding='utf-8', level=logging.INFO)
+    logging.basicConfig(filename=log_name, level=logging.INFO)
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     logging.info(f"Starting test set evaluation for model: {model_name}")
     # logging.info(f"This log file will be saved at: {log_name}")
@@ -173,6 +174,7 @@ if __name__ == "__main__":
     model = args[1]
     path_to_test_set = args[2]
     output_file_path = args[3]
+    print(model)
     stylized = False
     if len(args) == 5 and str.lower(args[4]) == "-s":
         stylized = True
