@@ -102,6 +102,8 @@ Create the figures in the notebook `code/ReproduceFigures.ipynb`
 
 ## Creating the stylized dataset
 
+The raw data used for the figures we re-created can be found in the `code/fig4results` and `code/fig5results`.
+
 The code to create the stylized dataset can be found in the repository by the original authors: 
 
 https://github.com/bethgelab/stylize-datasets
